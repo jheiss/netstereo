@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *****************************************************************************
  * $Log$
+ * Revision 1.3  2001/03/23 05:28:58  jheiss
+ * Added logging of errors from mpg123.
+ *
  * Revision 1.2  2001/03/20 06:42:59  jheiss
  * Added copyright and GPL message.
  *
@@ -151,7 +154,8 @@ public class MPG123SongPlayer extends SongPlayer implements ProcessOutputHandler
 			{
 				playState = PS_PLAYING;
 
-				if (tokenizedResponse[1].substring(0,3).equals("ID3"))
+				if (tokenizedResponse[1].length() >=  3 &&
+					tokenizedResponse[1].substring(0,3).equals("ID3"))
 				{
 					// Completely untested
 					String currentSong = tokenizedResponse[1].substring(4,34);
