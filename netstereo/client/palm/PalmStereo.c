@@ -3,7 +3,27 @@
  *****************************************************************************
  * PalmOS client for NetStereo
  *****************************************************************************
+ * Copyright (C) 1998-2001  Jason Heiss (jheiss@ofb.net)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *****************************************************************************
  * $Log$
+ * Revision 1.3  2001/03/19 07:50:27  jheiss
+ * Added hack to detect if the device was powered off and request
+ * updated status from the server if it was.
+ *
  * Revision 1.2  2001/03/16 23:15:34  jheiss
  * Removed a bunch of old, commented-out code.
  * Cleaned up/improved a number of comments.
@@ -37,6 +57,7 @@
 #define MAX_INFO_LABEL 40
 #define TRIM_PLAYLIST_PATH 1
 #define PATH_CHAR '/'
+#define FAVORITE_PLAYLIST "female-nested.m3u"
 
 /* Global variables */
 UInt16 refNum = sysInvalidRefNum;  // Serial library reference number
@@ -73,6 +94,10 @@ UInt32 PilotMain(UInt16 launchCode, MemPtr cmdPBP, UInt16 launchFlags)
 		if ((err = StartApplication()) == 0)
 		{
 			EventLoop();
+			StopApplication();
+		}
+		else
+		{
 			StopApplication();
 		}
 	}
@@ -138,7 +163,15 @@ Err StartApplication(void)
 	// and nothing seems to get rid of that.  So we send a bogus
 	// string first and then continue on our merry way.
 	err = SendString("JUNK\r\n", true);
+	if (err)
+	{
+		return err;
+	}
 	err = SendString("AUTH\tNULL\tNOPLAYLISTS\r\n", true);
+	if (err)
+	{
+		return err;
+	}
 	// Make sure authentication was successful
 	//  ...
 
@@ -333,7 +366,7 @@ static Boolean MainFormHandleEvent(EventPtr event)
 		case ctlSelectEvent: // A control button was pressed and released.
 			switch (event->data.ctlSelect.controlID)
 			{
-				case SkipBackButton:
+				case PreviousSongButton:
 					if (currentPlaylistIndex != 0)
 					{
 						StrIToA(playlistIndexString, currentPlaylistIndex-1);
@@ -371,7 +404,7 @@ static Boolean MainFormHandleEvent(EventPtr event)
 					SendString("SKIP_FORWARD\r\n", false);
 					handled = true;
 					break;
-				case SkipForwardButton:
+				case NextSongButton:
 					// Should check to make sure we don't go off the end
 					// of the playlist.  The server checks as well, but
 					// better we check it and do something appropriate.
@@ -406,6 +439,12 @@ static Boolean MainFormHandleEvent(EventPtr event)
 					break;
 				case LoadPlaylistButton:
 					SendString("GET_AVAIL_PLAYLISTS\r\n", false);
+					handled = true;
+					break;
+				case FavoritePlaylistButton:
+					SendString("PLAYLIST\t", false);
+					SendString(FAVORITE_PLAYLIST, false);
+					SendString("\r\n", false);
 					handled = true;
 					break;
 			}
@@ -729,6 +768,27 @@ Err ParseResponse(Char *response)
 		if (numResponseParts == 2)
 		{
 			playState = StrAToI(responseParts[1]);
+			switch (playState)
+			{
+				case PS_STOPPED:
+					frm = FrmGetFormPtr(MainForm);
+					CtlSetLabel(FrmGetObjectPtr(frm,
+						FrmGetObjectIndex(frm, PlayPauseButton)),
+						"Play");
+					break;
+				case PS_PLAYING:
+					frm = FrmGetFormPtr(MainForm);
+					CtlSetLabel(FrmGetObjectPtr(frm,
+						FrmGetObjectIndex(frm, PlayPauseButton)),
+						"Pause");
+					break;
+				case PS_PAUSED:
+					frm = FrmGetFormPtr(MainForm);
+					CtlSetLabel(FrmGetObjectPtr(frm,
+						FrmGetObjectIndex(frm, PlayPauseButton)),
+						"Unpause");
+					break;
+			}
 		}
 	}
 	else if (StrCompare(responseParts[0], "SHUFFLEENABLED") == 0)
@@ -786,6 +846,10 @@ Err ParseResponse(Char *response)
 			CreateAvailablePlaylistArray(1);
 			AddToAvailablePlaylists(responseParts[1]);
 			UpdatePlaylistDisplay();
+			frm = FrmGetFormPtr(MainForm);
+			CtlSetLabel(FrmGetObjectPtr(frm,
+				FrmGetObjectIndex(frm, PlaylistPopup)),
+				responseParts[1]);
 		}
 	}
 	else if (StrCompare(responseParts[0], "END_PLAYLIST") == 0)
