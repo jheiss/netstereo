@@ -20,6 +20,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *****************************************************************************
  * $Log$
+ * Revision 1.1  2001/04/12 08:40:06  jheiss
+ * Initial revision
+ *
  *****************************************************************************
  */
 
@@ -64,6 +67,11 @@ public class SwingClient extends StereoClient
 	// These should eventually be user-selected
 	private Vector songExtensions = null;
 	private Vector playlistExtensions = null;
+
+	public static void main(String[] args)
+	{
+		SwingClient ourClient = new SwingClient();
+	}
 
 	public SwingClient()
 	{
@@ -150,37 +158,51 @@ public class SwingClient extends StereoClient
 		JPanel topButtonPanel = new JPanel();
 		JButton previousSongButton = new JButton("Previous Song");
 		previousSongButton.addActionListener(actionListener);
+		previousSongButton.setMnemonic('e');
 		JButton backButton = new JButton("Rewind");
 		backButton.addActionListener(actionListener);
+		backButton.setMnemonic('r');
 		playPauseButton = new JButton("Play");
 		playPauseButton.addActionListener(actionListener);
+		playPauseButton.setMnemonic('p');
 		JButton stopButton = new JButton("Stop");
 		stopButton.addActionListener(actionListener);
+		stopButton.setMnemonic('s');
 		JButton fastForwardButton = new JButton("Fast Forward");
 		fastForwardButton.addActionListener(actionListener);
+		fastForwardButton.setMnemonic('f');
 		JButton nextSongButton = new JButton("Next Song");
 		nextSongButton.addActionListener(actionListener);
+		nextSongButton.setMnemonic('n');
 
 		JPanel bottomButtonPanel = new JPanel();
 		JButton addSongButton = new JButton("Add Song(s)");
 		addSongButton.addActionListener(actionListener);
+		addSongButton.setMnemonic('a');
 		JButton deleteSongButton = new JButton("Remove Song(s)");
 		deleteSongButton.addActionListener(actionListener);
+		deleteSongButton.setMnemonic('m');
 		JButton loadPlaylistButton = new JButton("Load Playlist");
 		loadPlaylistButton.addActionListener(actionListener);
+		loadPlaylistButton.setMnemonic('l');
 		JButton savePlaylistButton = new JButton("Save Playlist");
 		savePlaylistButton.addActionListener(actionListener);
-		JButton clearPlaylist = new JButton("Clear Playlist");
-		clearPlaylist.addActionListener(actionListener);
+		savePlaylistButton.setMnemonic('v');
+		JButton clearPlaylistButton = new JButton("Clear Playlist");
+		clearPlaylistButton.addActionListener(actionListener);
+		clearPlaylistButton.setMnemonic('c');
 		//JButton quitButton = new JButton("Quit");
 		//quitButton.addActionListener(actionListener);
+		//quitButton.setMnemonic('q');
 
 		// Create the checkboxes
 		itemListener = new SwingClientItemListener();
 		shuffleCheckBox = new JCheckBox("Shuffle", shuffleEnabled);
 		shuffleCheckBox.addItemListener(itemListener);
+		shuffleCheckBox.setMnemonic('h');
 		loopCheckBox = new JCheckBox("Loop Playlist", loopEnabled);
 		loopCheckBox.addItemListener(itemListener);
+		loopCheckBox.setMnemonic('o');
 
 		// Create all of the components of the playlist
 		playlistListModel = new DefaultListModel();
@@ -250,7 +272,7 @@ public class SwingClient extends StereoClient
 		//gridbag.setConstraints(nextSongButton, c);
 		//panel.add(nextSongButton);
 
-		// Put the top row of button in a seperate panel so that they
+		// Put the top row of buttons in a seperate panel so that they
 		// can squish together
 		topButtonPanel.add(previousSongButton);
 		topButtonPanel.add(backButton);
@@ -294,8 +316,8 @@ public class SwingClient extends StereoClient
 		panel.add(loadPlaylistButton);
 		gridbag.setConstraints(savePlaylistButton, c);
 		panel.add(savePlaylistButton);
-		gridbag.setConstraints(clearPlaylist, c);
-		panel.add(clearPlaylist);
+		gridbag.setConstraints(clearPlaylistButton, c);
+		panel.add(clearPlaylistButton);
 		//gridbag.setConstraints(quitButton, c);
 		//panel.add(quitButton);
 
@@ -305,7 +327,7 @@ public class SwingClient extends StereoClient
 		//bottomButtonPanel.add(deleteSongButton);
 		//bottomButtonPanel.add(loadPlaylistButton);
 		//bottomButtonPanel.add(savePlaylistButton);
-		//bottomButtonPanel.add(clearPlaylist);
+		//bottomButtonPanel.add(clearPlaylistButton);
 		//c.gridx = GridBagConstraints.RELATIVE; c.gridy = 10;
 		//c.gridheight = 1; c.gridwidth = GridBagConstraints.REMAINDER;
 		//c.fill = GridBagConstraints.HORIZONTAL;
@@ -328,7 +350,7 @@ public class SwingClient extends StereoClient
 					// Arrgh, setSelected generated an ItemListener event,
 					// which causes us to send the "new" state to the server,
 					// which sends it back, which....  So we disable the
-					// ItemListener while making the
+					// ItemListener while making the change.
 					System.err.println("loopEnabled: " + loopEnabled +
 						"  isSelected: " + loopCheckBox.isSelected());
 					loopCheckBox.removeItemListener(itemListener);
@@ -382,35 +404,12 @@ public class SwingClient extends StereoClient
 		return panel;
 	}
 
+	// Obviously not quite done yet...  :)
 	public JPanel createPreferencesPanel()
 	{
 		JPanel preferencesPanel = new JPanel();
 
 		return preferencesPanel;
-	}
-
-	public static void main(String[] args)
-	{
-		// Instantiate ourselves to make the event handler stuff happy
-		SwingClient ourClient = new SwingClient();
-	}
-
-	// Covert from a integer number of seconds to a MM:SS string.
-	// Seems like there ought to be a Java method to do this but I
-	// couldn't find one.
-	public static String secToMinSec(int seconds)
-	{
-		int minutes = seconds / 60;
-		int remSeconds = seconds - (60 * minutes);
-
-		if (remSeconds < 10)
-		{
-			return new String(minutes + ":0" + remSeconds);
-		}
-		else
-		{
-			return new String(minutes + ":" + remSeconds);
-		}
 	}
 
 	// We need to override this method so that we can update the onscreen
@@ -431,12 +430,14 @@ public class SwingClient extends StereoClient
 		playlistList.ensureIndexIsVisible(newCurrentPlaylistIndex);
 	}
 
+	// Pop up a dialog box with an error message
 	public void setError(String errorMessage)
 	{
 		JOptionPane.showMessageDialog(frame, errorMessage, "Error",
 			JOptionPane.ERROR_MESSAGE);
 	}
 
+	// Event handler for buttons and menu items
 	class SwingClientActionListener implements ActionListener
 	{
 		public void actionPerformed(ActionEvent e)
@@ -519,32 +520,7 @@ public class SwingClient extends StereoClient
 				}
 				else
 				{
-					songSelectDialog = new JDialog(frame, "Select Song(s)",
-						true);
-					songSelectList = new JList(availableSongs);
-					//songSelectList.
-						//setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-					//SongListSelectionHandler listSelectionHandler =
-						//new SongListSelectionHandler();
-					//songSelectList.
-						//addListSelectionListener(listSelectionHandler);
-					SongDialogActionHandler actionHandler =
-						new SongDialogActionHandler();
-					JScrollPane songSelectScrollPane =
-						new JScrollPane(songSelectList);
-					JButton okButton = new JButton("OK");
-					okButton.addActionListener(actionHandler);
-					JButton cancelButton = new JButton("Cancel");
-					cancelButton.addActionListener(actionHandler);
-					JPanel buttonPanel = new JPanel();
-					buttonPanel.add(okButton);
-					buttonPanel.add(cancelButton);
-					songSelectDialog.getContentPane().
-						add(songSelectScrollPane, BorderLayout.CENTER);
-					songSelectDialog.getContentPane().
-						add(buttonPanel, BorderLayout.SOUTH);
-					songSelectDialog.pack();
-					songSelectDialog.show();
+					showSongSelectDialog();
 				}
 			}
 			else if (actionCommand.equals("Load Playlist"))
@@ -572,59 +548,12 @@ public class SwingClient extends StereoClient
 				}
 				else
 				{
-					playlistSelectDialog = new JDialog(frame, "Select Playlist",
-						true);
-					playlistSelectList = new JList(availablePlaylists);
-					playlistSelectList.
-						setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-					PlaylistListSelectionHandler listSelectionHandler =
-						new PlaylistListSelectionHandler();
-					playlistSelectList.
-						addListSelectionListener(listSelectionHandler);
-					JScrollPane playlistSelectScrollPane =
-						new JScrollPane(playlistSelectList);
-					playlistSelectDialog.getContentPane().
-						add(playlistSelectScrollPane);
-					playlistSelectDialog.pack();
-					playlistSelectDialog.show();
+					showPlaylistSelectDialog();
 				}
 			}
 			else if (actionCommand.equals("Save Playlist"))
 			{
-				fileChooser.setCurrentDirectory(new File(songDirectory));
-				fileChooser.rescanCurrentDirectory();
-				fileChooser.setFileFilter(playlistFileFilter);
-				int returnVal = fileChooser.showSaveDialog(frame);
-
-				if (returnVal == JFileChooser.APPROVE_OPTION)
-				{
-					PrintWriter playlistWriter = null;
-
-					try
-					{
-						playlistWriter = new PrintWriter(
-							new FileWriter(fileChooser.
-								getSelectedFile().getAbsolutePath()));
-					}
-					catch (IOException savePlaylistIOException)
-					{
-						JOptionPane.showMessageDialog(frame,
-							"Can't write to playlist file " + 
-							fileChooser.getSelectedFile().getAbsolutePath(),
-							"Error", JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-
-					for (Enumeration savePlaylistEnumeration =
-						playlist.elements();
-						savePlaylistEnumeration.hasMoreElements();)
-					{
-						playlistWriter.println(
-							savePlaylistEnumeration.nextElement());
-					}
-
-					playlistWriter.close();
-				}
+				showSavePlaylistDialog();
 			}
 			else if (actionCommand.equals("Clear Playlist"))
 			{
@@ -638,6 +567,108 @@ public class SwingClient extends StereoClient
 		}
 	}
 
+	public void showSongSelectDialog()
+	{
+		songSelectDialog = new JDialog(frame, "Select Song(s)", true);
+		songSelectList = new JList(availableSongs);
+		//songSelectList.
+			//setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		songSelectList.setSelectedIndex(0);
+		//SongListSelectionHandler listSelectionHandler =
+			//new SongListSelectionHandler();
+		//songSelectList.
+			//addListSelectionListener(listSelectionHandler);
+		ListKeyListener listKeyListener = new ListKeyListener();
+		songSelectList.addKeyListener(listKeyListener);
+		SongDialogActionHandler actionHandler =
+			new SongDialogActionHandler();
+		JScrollPane songSelectScrollPane =
+			new JScrollPane(songSelectList);
+		JButton okButton = new JButton("OK");
+		okButton.setMnemonic('o');
+		okButton.addActionListener(actionHandler);
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.setMnemonic('c');
+		cancelButton.addActionListener(actionHandler);
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(okButton);
+		buttonPanel.add(cancelButton);
+		songSelectDialog.getContentPane().
+			add(songSelectScrollPane, BorderLayout.CENTER);
+		songSelectDialog.getContentPane().
+			add(buttonPanel, BorderLayout.SOUTH);
+		songSelectDialog.pack();
+		songSelectList.requestFocus();
+		songSelectDialog.show();
+	}
+
+	public void showPlaylistSelectDialog()
+	{
+		playlistSelectDialog = new JDialog(frame, "Select Playlist", true);
+		playlistSelectList = new JList(availablePlaylists);
+		playlistSelectList.
+			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		playlistSelectList.setSelectedIndex(0);
+		//PlaylistListSelectionHandler listSelectionHandler =
+			//new PlaylistListSelectionHandler();
+		//playlistSelectList.
+			//addListSelectionListener(listSelectionHandler);
+		ListKeyListener listKeyListener = new ListKeyListener();
+		playlistSelectList.addKeyListener(listKeyListener);
+		PlaylistListMouseListener listMouseListener =
+			new PlaylistListMouseListener();
+		playlistSelectList.addMouseListener(listMouseListener);
+		JScrollPane playlistSelectScrollPane =
+			new JScrollPane(playlistSelectList);
+		playlistSelectScrollPane.setColumnHeaderView(new
+			JLabel("Select with Enter, Space or Double Click.  " +
+				"Escape to cancel."));
+		playlistSelectDialog.getContentPane().
+			add(playlistSelectScrollPane);
+		playlistSelectDialog.pack();
+		playlistSelectList.requestFocus();
+		playlistSelectDialog.show();
+	}
+
+	public void showSavePlaylistDialog()
+	{
+		fileChooser.setCurrentDirectory(new File(songDirectory));
+		fileChooser.rescanCurrentDirectory();
+		fileChooser.setFileFilter(playlistFileFilter);
+		int returnVal = fileChooser.showSaveDialog(frame);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			PrintWriter playlistWriter = null;
+
+			try
+			{
+				playlistWriter = new PrintWriter(
+					new FileWriter(fileChooser.
+						getSelectedFile().getAbsolutePath()));
+			}
+			catch (IOException e)
+			{
+				JOptionPane.showMessageDialog(frame,
+					"Can't write to playlist file " + 
+					fileChooser.getSelectedFile().getAbsolutePath(),
+					"Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			for (Enumeration savePlaylistEnumeration =
+				playlist.elements();
+				savePlaylistEnumeration.hasMoreElements();)
+			{
+				playlistWriter.println(
+					savePlaylistEnumeration.nextElement());
+			}
+
+			playlistWriter.close();
+		}
+	}
+
+	// Event handler for checkboxes
 	class SwingClientItemListener implements ItemListener
 	{
 		public void itemStateChanged(ItemEvent e)
@@ -670,6 +701,7 @@ public class SwingClient extends StereoClient
 		}
 	}
 
+	// Event handler for "Add Song" dialog box
 	class SongDialogActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent e)
@@ -692,6 +724,7 @@ public class SwingClient extends StereoClient
 		}
 	}
 
+	// Old event handler for "Load Playlist" dialog box
 	class PlaylistListSelectionHandler implements ListSelectionListener
 	{
 		public void valueChanged (ListSelectionEvent e)
@@ -709,11 +742,207 @@ public class SwingClient extends StereoClient
 			else
 			{
 				int index = theList.getSelectedIndex();
-				ioHandler.sendPlaylist((String)
+				/*ioHandler.sendPlaylist((String)
 					availablePlaylists.elementAt(index));
-				playlistSelectDialog.hide();
+				playlistSelectDialog.hide();*/
+				/*System.out.println("Selected " +
+					(String) availablePlaylists.elementAt(index));*/
 			}
 		}
+	}
+
+	// Keyboard event handler for "Load Playlist" and "Add Song" dialog boxes
+	class ListKeyListener extends KeyAdapter
+	{
+		StringBuffer keyBuffer;
+
+		ListKeyListener()
+		{
+			super();
+			keyBuffer = new StringBuffer();
+		}
+
+		// keyTyped is called before keyReleased, but we need to handle
+		// the special keys like Enter and Esc in keyReleased before
+		// keyTyped is allowed to run.  Otherwise we recalculate the best
+		// match based on a string with something funky at the end (enter,
+		// escape, etc.) and without taking into account any other scrolling
+		// the user might have done.  So we just have keyReleased and
+		// it calls this method when appropriate.
+		//public void keyTyped(KeyEvent e)
+		public void myKeyTyped(KeyEvent e)
+		{
+			char key = e.getKeyChar();
+
+			System.out.println("Key typed:  '" + key + "'");
+
+			keyBuffer.append(key);
+
+			System.out.println("String so far:  '" + keyBuffer + "'");
+
+			setClosestMatch((JList) e.getSource());
+		}
+
+		private void setClosestMatch(JList list)
+		{
+			int closestIndex;
+			if (list == playlistSelectList)
+			{
+				closestIndex = findClosestMatch(keyBuffer.toString(),
+					availablePlaylists);
+			}
+			else if (list == songSelectList)
+			{
+				closestIndex = findClosestMatch(keyBuffer.toString(),
+					availableSongs);
+			}
+			else
+			{
+				return;
+			}
+			list.setSelectedIndex(closestIndex);
+			list.ensureIndexIsVisible(closestIndex);
+		}
+
+		public void keyReleased(KeyEvent e)
+		{
+			JList sourceList = (JList) e.getSource();
+
+			if (e.getKeyCode() == KeyEvent.VK_ENTER ||
+				e.getKeyCode() == KeyEvent.VK_SPACE)
+			{
+				if (sourceList == playlistSelectList)
+				{
+					System.out.println("Enter or space released");
+
+					if (playlistSelectList.isSelectionEmpty())
+					{
+						return;
+					}
+					else
+					{
+						int index = playlistSelectList.getSelectedIndex();
+						//System.out.println("Selected " +
+							//(String) availablePlaylists.elementAt(index));
+						ioHandler.sendPlaylist((String)
+							availablePlaylists.elementAt(index));
+						playlistSelectDialog.hide();
+					}
+				}
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+			{
+				System.out.println("Escape released");
+				if (sourceList == playlistSelectList)
+				{
+					playlistSelectDialog.hide();
+				}
+				else if (sourceList == songSelectList)
+				{
+					songSelectDialog.hide();
+				}
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+			{
+				System.out.println("Backspace released");
+				if (keyBuffer.length() > 0)
+				{
+					keyBuffer.deleteCharAt(keyBuffer.length()-1);
+					setClosestMatch(sourceList);
+				}
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_U && e.isControlDown())
+			{
+				System.out.println("^U released");
+				keyBuffer.setLength(0);
+				sourceList.setSelectedIndex(0);
+				sourceList.ensureIndexIsVisible(0);
+			}
+			else if (e.getKeyChar() != KeyEvent.CHAR_UNDEFINED)
+			{
+				myKeyTyped(e);
+			}
+		}
+	}
+
+	// Mouse event handler for "Load Playlist" dialog box
+	class PlaylistListMouseListener extends MouseAdapter
+	{
+		public void mouseClicked(MouseEvent e)
+		{
+			if (e.getClickCount() == 2)
+			{
+				JList theList = (JList) e.getSource();
+				if (theList.isSelectionEmpty())
+				{
+					return;
+				}
+				else
+				{
+					int index = theList.locationToIndex(e.getPoint());
+					//System.out.println("Selected " +
+						//(String) availablePlaylists.elementAt(index));
+					ioHandler.sendPlaylist((String)
+						availablePlaylists.elementAt(index));
+					playlistSelectDialog.hide();
+				}
+			}
+		}
+	}
+
+	// Find the closest match to a given string in a vector of strings
+	private int findClosestMatch(String matchString, Vector searchVector)
+	{
+		int bestMatch = 0;
+		int endOfRange = searchVector.size();
+		boolean lookingForEndOfRange = false;
+
+		matchString = matchString.toLowerCase();
+	
+		System.out.println("Looking for best match for " + matchString);
+
+		for (int i=0 ; i<matchString.length() ; i++)
+		{
+			char matchChar = matchString.charAt(i);
+
+			for (int j=bestMatch ; j<endOfRange ; j++)
+			{
+				char testChar =
+					((String) (searchVector.elementAt(j))).charAt(i);
+				testChar = Character.toLowerCase(testChar);
+
+				if (lookingForEndOfRange)
+				{
+					if (testChar != matchChar)
+					{
+						System.out.println("End of range:  " +
+							searchVector.elementAt(j));
+						endOfRange = j;
+						lookingForEndOfRange = false;
+						break;
+					}
+				}
+				else if (testChar > matchChar)
+				{
+					// Best match already found, return it
+					System.out.println("Best match:  " +
+						searchVector.elementAt(bestMatch));
+					return bestMatch;
+				}
+				else if (testChar == matchChar)
+				{
+					// New best match found, go on to next character
+					System.out.println("New best match found:  " +
+						searchVector.elementAt(j));
+					bestMatch = j;
+					lookingForEndOfRange = true;
+				}
+			}
+
+			lookingForEndOfRange = false;
+		}
+
+		return bestMatch;
 	}
 
 	// Affects GUI, must only be called from within event listeners
@@ -789,6 +1018,24 @@ public class SwingClient extends StereoClient
 		{
 			// Vector.toString makes a nice list like:  [one, two, three]
 			return "Playlist files " + playlistExtensions.toString();
+		}
+	}
+
+	// Covert from a integer number of seconds to a MM:SS string.
+	// Seems like there ought to be a Java method to do this but I
+	// couldn't find one.
+	public static String secToMinSec(int seconds)
+	{
+		int minutes = seconds / 60;
+		int remSeconds = seconds - (60 * minutes);
+
+		if (remSeconds < 10)
+		{
+			return new String(minutes + ":0" + remSeconds);
+		}
+		else
+		{
+			return new String(minutes + ":" + remSeconds);
 		}
 	}
 }
