@@ -1,0 +1,11 @@
+$Id$
+
+0.1:
+Makefile:			1.3
+PalmStereo.c:		1.4
+PalmStereo.h:		1.2
+PalmStereo.rcp:		1.3
+PalmStereoRsc.h:	1.2
+README:				Not checked in
+TODO:				Not checked in
+
