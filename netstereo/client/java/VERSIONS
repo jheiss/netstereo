@@ -1,0 +1,14 @@
+$Id$
+
+0.1:
+Makefile:				Not checked in
+MicroNetClient.java:	Not checked in
+NetClient.java:			1.1
+README:					Not checked in
+SerialClient.java:		1.1
+ServerIOHandler.java:	1.1
+StereoClient.java:		1.1
+SwingClient.java:		1.1
+TODO:					Not checked in
+Tokenize.java:			1.2
+
