@@ -14,15 +14,21 @@ SU=true
 USER=jheiss
 APPDIR=/home/jheiss/netstereo/server/java
 MUSICDIR=/music
-LOGDIR=$APPDIR
-LOGFILE=$LOGDIR/stereoserver.log
-PIDFILE=$LOGDIR/stereoserver.pid
+LOGFILE=/var/log/stereoserver.log
+PIDFILE=/var/run/stereoserver.pid
 JAVA=/usr/java/jdk1.3/bin/java
-SETVOLUME="aumix -v 75"
+SETVOLUME="aumix -v 50"
 KILLMPG123=true
 
 case "$1" in
 	start)
+		# Make sure the server isn't already running
+		ps -e | awk '{print $1}' | grep -qs "^`cat $PIDFILE`\$"
+		if [ "$?" = 0 ]
+		then
+			exit
+		fi
+
 		if [ -n "$SETVOLUME" ]
 		then
 			$SETVOLUME
@@ -30,7 +36,7 @@ case "$1" in
 		cd $MUSICDIR
 		if [ x"$SU" = "xtrue" ]
 		then
-			su $USER -c "$JAVA -classpath $APPDIR StereoServer" > $LOGFILE 2>&1 &
+			su $USER -c "$JAVA -classpath $APPDIR -Dgnu.io.rxtx.SerialPorts=/dev/ttyS0:/dev/ttyS1:/dev/ttyS2:/dev/ttyS3 StereoServer" > $LOGFILE 2>&1 &
 		else
 			$JAVA -classpath $APPDIR StereoServer > $LOGFILE 2>&1 &
 		fi
