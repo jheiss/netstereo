@@ -1,0 +1,13 @@
+$Id$
+
+Java clients for the NetStereo application (currently only a GUI client
+using the Swing toolkit is implemented).  The server and other types
+of clients can be found at http://ofb.net/~jheiss/netstereo/
+
+This was developed using the v1.3 JDK from Sun on Red Hat Linux 7.0
+and Windows 2000.  It should compile using any JDK which supports Swing.
+
+Testing is mainly done on Red Hat Linux 7.0, but I occasionally check
+to make sure it runs under Windows as well (using the Sun JDK for
+Windows).
+
