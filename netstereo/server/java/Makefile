@@ -4,6 +4,9 @@
 # Makefile for the NetStereo server
 ##############################################################################
 # $Log$
+# Revision 1.3  2001/03/23 07:34:59  jheiss
+# Added NOTES to dist package.
+#
 # Revision 1.2  2001/03/23 07:32:11  jheiss
 # Fixed typo in PROGRAM name.
 # Replaced hack start and stop scripts with real init script in dist package.
@@ -15,7 +18,7 @@
 
 JAVAC=javac
 PROGRAM=StereoServer
-VER=0.1
+VER=0.2
 
 # Implicit rule for Java code
 %.class: %.java
