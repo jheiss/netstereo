@@ -1,0 +1,13 @@
+$Id$
+
+Palm client for the NetStereo application.  The server and other types
+of clients can be found at http://ofb.net/~jheiss/netstereo/
+
+This was developed using the prc-tools version 2.0 and the version 3.5
+Palm SDK.  I know it won't compile without modification using an
+earlier SDK, don't know about earlier versions of the prc-tools.
+
+Testing is done on my PalmPilot Professional (PalmOS 2.0).  Devices
+running PalmOS 1.0 will not work.  Anything later should, but hasn't
+been tested.
+
