@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *****************************************************************************
  * $Log$
+ * Revision 1.2  2001/03/20 06:42:59  jheiss
+ * Added copyright and GPL message.
+ *
  * Revision 1.1  2001/03/20 06:42:06  jheiss
  * Initial revision
  *
@@ -256,6 +259,8 @@ public class MPG123SongPlayer extends SongPlayer implements ProcessOutputHandler
 	{
 		// Send it to each client
 		sendError(errorLine);
+		// And log it
+		System.err.println("Error from mpg123:  " + errorLine);
 	}
 }
 
