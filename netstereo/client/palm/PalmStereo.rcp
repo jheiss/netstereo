@@ -3,9 +3,27 @@
  *****************************************************************************
  * Resource file for NetStereo Palm client.
  *****************************************************************************
+ * Copyright (C) 1998-2001  Jason Heiss (jheiss@ofb.net)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *****************************************************************************
  * $Log$
- * Revision 1.1  2001/03/16 21:52:13  jheiss
- * Initial revision
+ * Revision 1.2  2001/03/17 02:17:47  jheiss
+ * Replaced RCS Id in About dialog with simple, hand updated version
+ * number.  The RCS version of this file isn't indicative of the overall
+ * program version, and it's too long.
  *
  * Revision 1.1  2001/03/07 01:40:06  jheiss
  * Initial revision
@@ -120,21 +138,23 @@ BEGIN
 	LABEL "Info:" ID InfoLabel AT (5 60)
 	LABEL "                                        " ID InfoTextLabel AT (PrevRight+3 PrevTop)
 
-	LABEL "Time:" ID TimeLabel at (35 70)
+	LABEL "Time:" ID TimeLabel at (40 72)
 	LABEL "00:00  " ID PlayedTimeTextLabel at (PrevRight+3 PrevTop)
 	LABEL "00:00  " ID TotalTimeTextLabel at (PrevRight+3 PrevTop)
 
-	BUTTON "Skp Bk" ID SkipBackButton AT (3 90 28 AUTO)
-	BUTTON "Back" ID BackButton AT (PrevRight+3 PrevTop 20 AUTO)
-	BUTTON "Stop" ID StopButton AT (PrevRight+3 PrevTop 20 AUTO)
-	BUTTON "Play" ID PlayPauseButton AT (PrevRight+3 PrevTop 20 AUTO)
-	BUTTON "Fwd" ID ForwardButton AT (PrevRight+3 PrevTop 18 AUTO)
-	BUTTON "Skp Fwd" ID SkipForwardButton AT (PrevRight+3 PrevTop 35 AUTO)
+	BUTTON "Stop" ID StopButton AT (35 88 40 AUTO)
+	BUTTON "Play" ID PlayPauseButton AT (PrevRight+10 PrevTop 40 AUTO)
 
-	CHECKBOX "Shuffle" ID ShuffleCheckbox AT (5 110 AUTO AUTO)
-	CHECKBOX "Loop" ID LoopCheckbox AT (PrevRight+5 PrevTop AUTO AUTO)
+	BUTTON "Prev" ID PreviousSongButton AT (13 108 40 AUTO)
+	BUTTON "Back" ID BackButton AT (PrevRight+5 PrevTop 20 AUTO)
+	BUTTON "Fwd" ID ForwardButton AT (PrevRight+5 PrevTop 20 AUTO)
+	BUTTON "Next" ID NextSongButton AT (PrevRight+5 PrevTop 40 AUTO)
 
-	BUTTON "Load Playlists" ID LoadPlaylistButton AT (5 130 AUTO AUTO)
+	CHECKBOX "Shuffle" ID ShuffleCheckbox AT (20 125 AUTO AUTO)
+	CHECKBOX "Loop" ID LoopCheckbox AT (PrevRight+30 PrevTop AUTO AUTO)
+
+	BUTTON "Load Playlists" ID LoadPlaylistButton AT (5 143 AUTO AUTO)
+	BUTTON "Favorite Playlist" ID FavoritePlaylistButton AT (PrevRight+5 PrevTop AUTO AUTO)
 END
 
 MENU ID MainMenu
