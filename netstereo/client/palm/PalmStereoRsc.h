@@ -4,6 +4,22 @@
  * Resource ID numbers for various GUI and misc. resources for NetStereo
  * Palm client.
  *****************************************************************************
+ * Copyright (C) 1998-2001  Jason Heiss (jheiss@ofb.net)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *****************************************************************************
  * $Log$
  * Revision 1.1  2001/03/07 01:36:53  jheiss
  * Initial revision
@@ -41,12 +57,12 @@
 #define PlayedTimeTextLabel 2051
 #define TotalTimeTextLabel 2052
 
-#define SkipBackButton 2100
+#define PreviousSongButton 2100
 #define BackButton 2101
 #define StopButton 2102
 #define PlayPauseButton 2103
 #define ForwardButton 2104
-#define SkipForwardButton 2105
+#define NextSongButton 2105
 
 #define ShuffleCheckbox 2150
 #define LoopCheckbox 2151
@@ -56,6 +72,7 @@
 #define LoadPlaylistButton 2202
 #define SavePlaylistButton 2203
 #define ClearPlaylistButton 2204
+#define FavoritePlaylistButton 2205
 
 #define MainMenu 2500
 #define PreferencesMenuItem 2501
