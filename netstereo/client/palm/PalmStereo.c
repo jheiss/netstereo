@@ -4,6 +4,11 @@
  * PalmOS client for NetStereo
  *****************************************************************************
  * $Log$
+ * Revision 1.2  2001/03/16 23:15:34  jheiss
+ * Removed a bunch of old, commented-out code.
+ * Cleaned up/improved a number of comments.
+ * Minor bug fixes and improvements.
+ *
  * Revision 1.1  2001/03/16 21:50:42  jheiss
  * Initial revision
  *
@@ -40,6 +45,7 @@ MemHandle serReceiveBufferMemHandle;  // Handle for our larger receive buffer
 // Current state
 UInt16 currentPlaylistIndex = 0;
 UInt16 playState = PS_STOPPED;
+UInt16 oldPlayedSeconds = 65535;
 // Available playlists, perhaps ought to be moved to a database someday
 Boolean availablePlaylistsLoaded = false;
 Char **availablePlaylists;
@@ -618,6 +624,41 @@ Err ParseResponse(Char *response)
 			FrmHideObject(frm, FrmGetObjectIndex(frm, PlayedTimeTextLabel));
 			FrmCopyLabel(frm, PlayedTimeTextLabel, formattedTime);
 			FrmShowObject(frm, FrmGetObjectIndex(frm, PlayedTimeTextLabel));
+
+			/* If the time is more than 10 seconds off, assume the Palm
+			 * was powered off for a bit and request a status update.
+			 * This should be replaced by something that uses the
+			 * notification feature and request notifications for the
+			 * sysNotifyLateWakeupEvent, but that stuff looked complicated
+			 * so I wimped out and put in this hack.
+			 */
+			/*SendString("JUNK\tSECS:", false);
+			SendString(responseParts[1], false);
+			StrIToA(formattedTime, oldPlayedSeconds);
+			SendString("  OPS:", false);
+			SendString(formattedTime, false);
+			SendString("\r\n", false);
+			
+			if (seconds > oldPlayedSeconds &&
+				seconds - oldPlayedSeconds > 10)
+			{
+				SendString("JUNK\tGT\r\n", false);
+			}
+			if (seconds < oldPlayedSeconds &&
+				oldPlayedSeconds - seconds > 10)
+			{
+				SendString("JUNK\tLT\r\n", false);
+			}*/
+
+			if (oldPlayedSeconds != 65535 &&
+				((seconds > oldPlayedSeconds &&
+				seconds - oldPlayedSeconds > 10) ||
+				(seconds < oldPlayedSeconds &&
+				oldPlayedSeconds - seconds > 10)))
+			{
+				SendString("STATUS\r\n", false);
+			}
+			oldPlayedSeconds = seconds;
 		}
 	}
 	else if (StrCompare(responseParts[0], "ARTIST") == 0)
