@@ -4,11 +4,14 @@
 # Makefile for the Java NetStereo client
 ##############################################################################
 # $Log$
+# Revision 1.1  2001/04/17 23:02:55  jheiss
+# Initial revision
+#
 ##############################################################################
 
 JAVAC=javac
 PROGRAM=StereoClient
-VER=0.1
+VER=0.2
 
 # Implicit rule for Java code
 %.class: %.java
