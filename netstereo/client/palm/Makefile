@@ -4,6 +4,9 @@
 # Makefile for NetStereo Palm client
 ##############################################################################
 # $Log$
+# Revision 1.2  2001/04/17 21:18:10  jheiss
+# Added dist target.
+#
 # Revision 1.1  2001/03/16 21:52:54  jheiss
 # Initial revision
 #
@@ -54,7 +57,7 @@ xfer: $(PRC)
 dist: $(PRC)
 	rm -rf $(PROGRAM)-$(VER)
 	mkdir $(PROGRAM)-$(VER)
-	cp $(PRC) Makefile GPL TODO $(SOURCES) $(HEADERS) $(RESOURCES) $(ICON) $(PROGRAM)-$(VER)
+	cp $(PRC) Makefile README GPL TODO $(SOURCES) $(HEADERS) $(RESOURCES) $(ICON) $(PROGRAM)-$(VER)
 	tar cf $(PROGRAM)-$(VER).tar $(PROGRAM)-$(VER)
 	gzip $(PROGRAM)-$(VER).tar
 	rm -rf $(PROGRAM)-$(VER)
