@@ -1,0 +1,169 @@
+/*****************************************************************************
+ * $Id$
+ *****************************************************************************
+ * Resource file for NetStereo Palm client.
+ *****************************************************************************
+ * $Log$
+ * Revision 1.1  2001/03/07 01:40:06  jheiss
+ * Initial revision
+ *
+ *****************************************************************************
+ */
+
+#include "PalmStereoRsc.h"
+
+VERSION ID VersionID "$Id$"
+APPLICATIONICONNAME ID IconNameID "PalmStereo"
+APPLICATION ID ApplicationID "MP3R"
+ICON "PalmStereo.bmp"
+
+ALERT ID RomIncompatibleAlert
+ERROR
+BEGIN
+	TITLE "System Incompatible"
+	MESSAGE "System version 2.0 or greater is required to run this " \
+		"application."
+	BUTTONS "OK"
+END
+
+ALERT ID SerialPortRefNumAlert
+ERROR
+BEGIN
+	TITLE "Serial Port Reference Number"
+	MESSAGE "There was an error looking up the serial port reference number."
+	BUTTONS "OK"
+END
+
+ALERT ID SerialPortInUseAlert
+ERROR
+BEGIN
+	TITLE "Serial Port In Use"
+	MESSAGE "Another application is using the serial port.  Please " \
+			"disable it and try again."
+	BUTTONS "OK"
+END
+
+ALERT ID SerialPortOpenAlert
+ERROR
+BEGIN
+	TITLE "Error Opening Serial Port"
+	MESSAGE "There was an error opening the serial port."
+	BUTTONS "OK"
+END
+
+ALERT ID SerialHandshakeTimeoutAlert
+ERROR
+BEGIN
+	TITLE "Serial Handshake Timeout"
+	MESSAGE "There was a serial handshake timeout."
+	BUTTONS "OK"
+END
+
+ALERT ID SerialLineErrorAlert
+ERROR
+BEGIN
+	TITLE "Serial Line Error"
+	MESSAGE "There was a serial line error."
+	BUTTONS "OK"
+END
+
+ALERT ID CantCommunicateWithComputerAlert
+ERROR
+BEGIN
+	TITLE "Communication Error"
+	MESSAGE "I can't seem to communicate with the computer.  Please " \
+			"check the cabling and try again."
+	BUTTONS "OK"
+END
+
+ALERT ID MemoryAllocationFailedAlert
+ERROR
+BEGIN
+	TITLE "Memory Allocation Failure"
+	MESSAGE "Memory allocation failed."
+	BUTTONS "OK"
+END
+
+ALERT ID AboutAlert
+INFORMATION
+BEGIN
+	TITLE "About PalmStereo"
+	MESSAGE "PalmOS remote control for NetStereo server\n" \
+		"$Id$\n" \
+		"http://ofb.net/~jheiss/netstereo/\n\n" \
+
+		"© 1998-2001  Jason Heiss (jheiss@ofb.net)\n" \
+		"Licensed under the GNU General Public License"
+	BUTTONS "OK"
+END
+
+FORM ID MainForm AT (0 0 160 160)
+NOFRAME
+USABLE
+MENUID MainMenu
+BEGIN
+	TITLE "PalmStereo"
+
+	POPUPTRIGGER "Playlists not loaded" ID PlaylistPopup AT (5 18 140 AUTO) LEFTANCHOR
+	LIST "" ID PlaylistList AT (PrevLeft PrevTop 150 0) NONUSABLE VISIBLEITEMS 1
+	POPUPLIST ID PlaylistPopup PlaylistList
+
+	LABEL "Artist:"  ID ArtistLabel AT (5 30)
+	LABEL "                                        " ID ArtistTextLabel AT (PrevRight+3 PrevTop)
+	LABEL "Album:" ID AlbumLabel AT (5 40)
+	LABEL "                                        " ID AlbumTextLabel AT (PrevRight+3 PrevTop)
+	LABEL "Song:" ID SongLabel AT (5 50)
+	LABEL "                                        " ID SongTextLabel AT (PrevRight+3 PrevTop)
+	LABEL "Info:" ID InfoLabel AT (5 60)
+	LABEL "                                        " ID InfoTextLabel AT (PrevRight+3 PrevTop)
+
+	LABEL "Time:" ID TimeLabel at (35 70)
+	LABEL "00:00  " ID PlayedTimeTextLabel at (PrevRight+3 PrevTop)
+	LABEL "00:00  " ID TotalTimeTextLabel at (PrevRight+3 PrevTop)
+
+	BUTTON "Skp Bk" ID SkipBackButton AT (3 90 28 AUTO)
+	BUTTON "Back" ID BackButton AT (PrevRight+3 PrevTop 20 AUTO)
+	BUTTON "Stop" ID StopButton AT (PrevRight+3 PrevTop 20 AUTO)
+	BUTTON "Play" ID PlayPauseButton AT (PrevRight+3 PrevTop 20 AUTO)
+	BUTTON "Fwd" ID ForwardButton AT (PrevRight+3 PrevTop 18 AUTO)
+	BUTTON "Skp Fwd" ID SkipForwardButton AT (PrevRight+3 PrevTop 35 AUTO)
+
+	CHECKBOX "Shuffle" ID ShuffleCheckbox AT (5 110 AUTO AUTO)
+	CHECKBOX "Loop" ID LoopCheckbox AT (PrevRight+5 PrevTop AUTO AUTO)
+
+	BUTTON "Load Playlists" ID LoadPlaylistButton AT (5 130 AUTO AUTO)
+END
+
+MENU ID MainMenu
+BEGIN
+	PULLDOWN "Options"
+	BEGIN
+		MENUITEM "Preferences" ID PreferencesMenuItem "R"
+		MENUITEM "About" ID AboutMenuItem
+	END
+END
+
+FORM ID AboutForm AT (0 0 160 160)
+FRAME
+USABLE
+MODAL
+BEGIN
+	TITLE "About PalmStero"
+
+	LABEL "PalmOS remote control for NetStereo server" AUTOID AT (5 5)
+	LABEL "$Id$" AUTOID AT (5 15)
+	LABEL "© 1998-2001  Jason Heiss (jheiss@ofb.net)" AUTOID AT (5 25)
+	LABEL "http://ofb.net/~jheiss/netstereo/" AUTOID AT (5 35)
+	LABEL "This program is free software; you can redistribute it and/or" AUTOID AT (5 45)
+	LABEL "modify it under the terms of the GNU General Public License" AUTOID AT (5 55)
+	LABEL "as published by the Free Software Foundation; either version 2" AUTOID AT (5 65)
+	LABEL "of the License, or (at your option) any later version." AUTOID AT (5 75)
+
+	LABEL "This program is distributed in the hope that it will be useful," AUTOID AT (5 95)
+	LABEL "but WITHOUT ANY WARRANTY; without even the implied warranty of" AUTOID AT (5 105)
+	LABEL "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the" AUTOID AT (5 115)
+	LABEL "GNU General Public License for more details." AUTOID AT (5 125)
+
+	BUTTON "OK" ID AboutOKButton AT (60 140 AUTO AUTO)
+END
+
