@@ -8,6 +8,15 @@
 # description: Server for NetStereo application
 ##############################################################################
 # $Log$
+# Revision 1.2  2001/04/12 06:13:37  jheiss
+# Changed the log and pid file locations to standard system directories.
+# Dropped the volume down, it was too high.
+# Added code to make sure the server isn't already running.
+# Added flag on java commandline to restrict the ports that RXTX
+# iterates through.  This dramatically speeds up startup, and
+# eliminates the errors that I was getting from the kernel when RXTX
+# poked at devices that didn't exist.
+#
 ##############################################################################
 
 SU=true
@@ -19,6 +28,8 @@ PIDFILE=/var/run/stereoserver.pid
 JAVA=/usr/java/jdk1.3/bin/java
 SETVOLUME="aumix -v 50"
 KILLMPG123=true
+RENICEMPG123=true
+NICEVAL="-5"
 
 case "$1" in
 	start)
@@ -33,7 +44,14 @@ case "$1" in
 		then
 			$SETVOLUME
 		fi
+
 		cd $MUSICDIR
+		if [ "$?" != 0 ]
+		then
+			echo "Failed to cd to $MUSICDIR"
+			exit 1
+		fi
+
 		if [ x"$SU" = "xtrue" ]
 		then
 			su $USER -c "$JAVA -classpath $APPDIR -Dgnu.io.rxtx.SerialPorts=/dev/ttyS0:/dev/ttyS1:/dev/ttyS2:/dev/ttyS3 StereoServer" > $LOGFILE 2>&1 &
@@ -42,6 +60,18 @@ case "$1" in
 		fi
 		pid=$!
 		echo "$pid" > $PIDFILE
+
+		if [ x"$RENICEMPG123" = x"true" ]
+		then
+			# Give the server time to initialize and start mpg123
+			sleep 5
+
+			mpg123pid=`ps -e | grep mpg123 | head -1 | awk '{print $1}'`
+			if [ -n "$mpg123pid" ]
+			then
+				renice $NICEVAL $mpg123pid
+			fi
+		fi
 		;;
 	stop)
 		kill `cat $PIDFILE`
