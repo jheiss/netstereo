@@ -1,0 +1,16 @@
+$Id$
+
+Improve handling of serial line in println in SerialCommunicator
+  - Current it does an isCTS() and then a println
+  - Sometimes the state changes between those two and the println
+    blocks, causing all sorts of trouble
+  - perhaps notifyOnCTS() would be useful?
+Improve authentication (i.e. something other than null auth)
+  - More methods
+  - Configuration
+Improve logging
+  - Have syslog class, but requires that syslogd is listening on network
+    (which isn't good for security)
+  - Either improve syslog class so it can write to a UNIX socket (which
+    Java doesn't support) or devise another method of logging
+

@@ -1,0 +1,9 @@
+$Id$
+
+If Java gets SIGINT it doesn't do any garbage collection or otherwise
+shut down nicely, and thus ProcessHandlerThread orphans its process
+
+Setting the user.dir property has no effect, so we're stuck with
+either forcing the user to start StereoServer in the appropriate
+directory or...
+

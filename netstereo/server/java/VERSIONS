@@ -1,0 +1,25 @@
+$Id$
+
+0.1:
+ClientConnection.java:		1.2
+JMFSongPlayer.java:			1.2
+MPG123SongPlayer.java:		1.4
+Makefile:					1.3
+NOTES:						Not checked in
+NetClient.java:				1.2
+NetCommunicator.java:		1.2
+ProcessHandlerThread.java:	1.2
+ProcessOutputHandler.java:	1.2
+ProtocolTranslator.java:	1.2
+README:						Not checked in
+SerialCommunicator.java:	1.2
+SongPlayer.java:			1.2
+Sort.java:					1.2
+StereoServer.java:			1.2
+TODO:						Not checked in
+ThreadInfo.java:			1.2
+Tokenize.java:				1.2
+de stuff:					??
+server.properties:			Not checked in
+stereoserver.init:			1.1
+

@@ -1,0 +1,34 @@
+$Id$
+
+Java server for the NetStereo application.  Clients can be found at
+http://ofb.net/~jheiss/netstereo/
+
+Configuration is done through one file:  server.properties.  An
+example is included with fairly verbose comments to guide you in
+configuring things for your setup.
+
+Because of what I consider a bug in the JDK, you must execute the
+server in the directory you want to be the working directory (the
+directory with your MP3 files).  See the included init script for
+an example.  Right now the configuration file (server.properties)
+must also reside in that directory.
+
+This was developed using the Sun JDK 1.3 for Linux.  The
+Java Media Framework (http://java.sun.com/products/java-media/jmf/) and
+Java Communications (http://java.sun.com/products/javacomm/) addons,
+a well as the MP3 class from http://www.vdheide.de/software/java_mp3.html,
+will be needed to compile everything, but you should be able to
+run the server without them if you've configured it not to use them.
+A copy of the MP3 class is included, but the Java addons need to be
+compiled and installed into your JDK so I'll leave that up to you.
+(The MP3 class is only used by the JMF code, so if you disable JMF you
+won't need the MP3 class either.)
+
+Note that I do the Java Communications development using the
+RXTX implementation (http://www.rxtx.org/) since Sun does not have
+a reference implementation for Linux.  I use the latest version
+from their CVS repository.
+
+And as a side note, the server works fine in Windows if you configure
+it to use JMF as the song player.
+
