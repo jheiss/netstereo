@@ -4,6 +4,9 @@
  * PalmOS client for NetStereo
  *****************************************************************************
  * $Log$
+ * Revision 1.1  2001/03/16 21:50:42  jheiss
+ * Initial revision
+ *
  *****************************************************************************
  */
 
@@ -14,7 +17,7 @@
 #include "PalmStereoRsc.h"
 
 /* Constants */
-#define DEBUG 1
+#define DEBUG 0
 #define PORT 0
 //#define SPEED 9600
 //#define SPEED 19200
@@ -22,8 +25,7 @@
 #define PS_STOPPED 0  // These three might be better as a enum
 #define PS_PLAYING 1
 #define PS_PAUSED 2
-#define MAX_PLAYLIST_NAME_LENGTH 256  // Don't need?
-#define MAX_COMMAND_SIZE 320  // Don't need?
+#define RECEIVE_CHECK_PER_SECOND 10  // # times/sec to check for incoming msg
 #define MAX_RESPONSE_SIZE 320
 #define MAX_RECEIVE_BUFFER 2048
 #define MAX_RESPONSE_PARTS 10
@@ -34,23 +36,14 @@
 /* Global variables */
 UInt16 refNum = sysInvalidRefNum;  // Serial library reference number
 Boolean serLibOpened = FALSE;    // State of the serial port
-MemHandle serReceiveBufferMemHandle;
-/* Current state */
-//Char *currentArtist;  // Don't need
-//Char *currentAlbum;  // Don't need
-//Char *currentSong;  // Don't need
-//Char *currentSongInfo;  // Don't need
+MemHandle serReceiveBufferMemHandle;  // Handle for our larger receive buffer
+// Current state
 UInt16 currentPlaylistIndex = 0;
 UInt16 playState = PS_STOPPED;
-//UInt16 totalSeconds, playedSeconds;  // Don't need
+// Available playlists, perhaps ought to be moved to a database someday
 Boolean availablePlaylistsLoaded = false;
 Char **availablePlaylists;
-//Char *availablePlaylists[128];
 UInt16 availablePlaylistIndex = 0;
-//Char *tempPlaylist;
-//Char *playlistName;  // Don't need
-//Boolean shuffleEnabled;  // Don't need
-//Boolean loopEnabled;  // Don't need
 // Global so the OS doesn't have to allocate it every 0.1 seconds
 Char receiveBuffer[MAX_RECEIVE_BUFFER];
 Char responseLine[MAX_RESPONSE_SIZE];
@@ -61,7 +54,7 @@ UInt32 PilotMain(UInt16 launchCode, MemPtr cmdPBP, UInt16 launchFlags)
 	Err err = 0;
 
 	/* Check for a compatible system version.  We need at least
-	 * version 2 for some of the serial functions we use.
+	 * version 2 for a large number of functions that we use.
 	 */
 	err = RomVersionCompatible(0x02000000, launchFlags);
 	if (err != 0)
@@ -135,6 +128,9 @@ Err StartApplication(void)
 
 	// Authenticate
 	//err = SerSendFlush(refNum);
+	// For some reason my Pilot send a ^H in front of the first string
+	// and nothing seems to get rid of that.  So we send a bogus
+	// string first and then continue on our merry way.
 	err = SendString("JUNK\r\n", true);
 	err = SendString("AUTH\tNULL\tNOPLAYLISTS\r\n", true);
 	// Make sure authentication was successful
@@ -214,8 +210,7 @@ static void EventLoop(void)
 
 	do
 	{
-		//EvtGetEvent(&event, evtWaitForever);
-		EvtGetEvent(&event, SysTicksPerSecond()/10);
+		EvtGetEvent(&event, SysTicksPerSecond()/RECEIVE_CHECK_PER_SECOND);
 
 		// It seems like we ought to do some check here to see if we
 		// got a new event or if we just timed out.  Otherwise it seems
@@ -292,9 +287,13 @@ static Boolean MainFormHandleEvent(EventPtr event)
 			switch (event->data.ctlSelect.controlID)  // Control btn was pressed
 			{
 				case PlaylistPopup:
-					// Fill in the Playlist list from the database
-					// The event hasn't been fully handled yet, we need to
-					// let the pilot display the popup list.
+					/* If we were storing the available playlists in a
+					 * database then this would be where we would
+					 * fill in the Playlist list from the database
+					 */
+					/* The event hasn't been fully handled yet, we need to
+					 * let the pilot display the popup list.
+					 */
 					//handled = false;
 					break;
 			}
@@ -307,14 +306,19 @@ static Boolean MainFormHandleEvent(EventPtr event)
 					selectedPlaylist = LstGetSelectionText(
 						event->data.popSelect.listP,
 						event->data.popSelect.selection);
-					frm = FrmGetFormPtr(MainForm);
-					CtlSetLabel(FrmGetObjectPtr(frm,
-						FrmGetObjectIndex(frm, PlaylistPopup)),
-						selectedPlaylist);
+					if (StrLen(selectedPlaylist) != 0)
+					{
+						frm = FrmGetFormPtr(MainForm);
+						// The docs imply this happens automagically, but
+						// it doesn't...
+						CtlSetLabel(FrmGetObjectPtr(frm,
+							FrmGetObjectIndex(frm, PlaylistPopup)),
+							selectedPlaylist);
 
-					SendString("PLAYLIST\t", false);
-					SendString(selectedPlaylist, false);
-					SendString("\r\n", false);
+						SendString("PLAYLIST\t", false);
+						SendString(selectedPlaylist, false);
+						SendString("\r\n", false);
+					}
 					handled = true;
 					break;
 			}
@@ -464,9 +468,12 @@ Err CheckReceive(void)
 {
 	Err err;
 	UInt32 availableCount, receivedCount;
-	Char *c, *d;
+	Char *c;
+	//Char *d;
 	UInt16 i;
-	Char byteCountString[32];  // For debugging
+	#if DEBUG
+	Char byteCountString[32];
+	#endif
 
 	err = SerReceiveCheck(refNum, &availableCount);
 	if (err == serErrLineErr)
@@ -511,6 +518,9 @@ Err CheckReceive(void)
 			// Does this ever happen?
 		}
 
+		// All the commented out bits here were to do the parsing using
+		// pointer arithmetic instead of array indicies.  Should be a
+		// little faster but it's got a bug and doesn't work.
 		//for (c=receiveBuffer, d=responseLine+responseIndex, i=0 ;
 		for (c=receiveBuffer, i=0 ;
 			i<receivedCount ;
@@ -553,25 +563,26 @@ Err CheckReceive(void)
 Err ParseResponse(Char *response)
 {
 	Err err;
-	Char *c, *d;
-	UInt16 i = 1;
-	UInt16 numResponseParts = 0;
+	Char *c;
+	UInt16 i;
+	UInt16 numResponseParts;
 	Char *responseParts[MAX_RESPONSE_PARTS];
 	FormType *frm;
-	//MemHandle memHandle;
-	//MemPtr memPtr;
-	//ListType *listPtr;
-	//ListPtr listPtr;
-	Char playlistCountString[16];  // For debugging only
 	UInt16 seconds;
 	Char formattedTime[16];
+	#if DEBUG
+	Char playlistCountString[16];
+	#endif
 
 	//SendString("JUNK\tLINE: '", false);
 	//SendString(response, false);
 	//SendString("'\r\n", false);
 
+	/* Chop the response (a tab seperated string) into an array of
+	 * strings.
+	 */
 	responseParts[0] = response;
-
+	i = 1;
 	for (c=response; *c!='\0' ; c++)
 	{
 		if (*c == '\t')
@@ -717,12 +728,13 @@ Err ParseResponse(Char *response)
 	{
 		if (StrLen(responseParts[1]) == 0)
 		{
-			return err;
+			return 0;
 		}
 
 		// Set selected entry in PlaylistList
 		if (availablePlaylistsLoaded)
 		{
+			// TODO
 		}
 		else
 		{
@@ -743,6 +755,8 @@ Err ParseResponse(Char *response)
 	else if (StrCompare(responseParts[0], "AVAIL_PLAYLISTS") == 0)
 	{
 		/* Clear existing UI list so we can free the associated memory */
+		// It seems like we ought to do this, but the Pilot crashes if
+		// we do...  Maybe we shouldn't pass a NULL to LstSetListChoices.
 		//listPtr = FrmGetObjectPtr(frm, PlaylistList);
 		//LstSetListChoices(listPtr, NULL, 0);
 
@@ -751,17 +765,6 @@ Err ParseResponse(Char *response)
 
 		/* Create a new array to hold the new list of playlists */
 		CreateAvailablePlaylistArray(StrAToI(responseParts[1]));
-		/*i = StrAToI(responseParts[1]);
-		memHandle = MemHandleNew(sizeof(Char *) * i);
-		if (memHandle == 0)
-		{
-			// alert user
-			FrmAlert(MemoryAllocationFailedAlert);
-
-			return err;
-		}
-		memPtr = MemHandleLock(memHandle);
-		availablePlaylists = memPtr;*/
 	}
 	else if (StrCompare(responseParts[0], "AVAIL_PLAYLIST") == 0)
 	{
@@ -772,73 +775,18 @@ Err ParseResponse(Char *response)
 		//SendString(responseParts[1], false);
 		//SendString("'\r\n", false);
 
-		/*if (availablePlaylists == NULL)
-		{
-			return;
-		}*/
-
-		/*if (TRIM_PLAYLIST_PATH)
-		{
-			for (c=responseParts[1], d=c ; *c!='\0' ; c++)
-			{
-				if (*c == PATH_CHAR)
-				{
-					d = c + 1;
-				}
-			}
-
-			responseParts[1] = d;
-		}*/
-
-		// +1 for the trailing null character
-		/*memHandle = MemHandleNew(StrLen(responseParts[1])+1);
-		if (memHandle == 0)
-		{
-			// alert user
-			FrmAlert(MemoryAllocationFailedAlert);
-
-			return err;
-		}
-		memPtr = MemHandleLock(memHandle);*/
-		/*memPtr = AllocateAndLockMemory(StrLen(responseParts[1])+1);
-		StrCopy(memPtr, responseParts[1]);
-		availablePlaylists[availablePlaylistIndex] = memPtr;
-		availablePlaylistIndex++;*/
 		AddToAvailablePlaylists(responseParts[1]);
 	}
 	else if (StrCompare(responseParts[0], "END_AVAIL_PLAYLISTS") == 0)
 	{
-		#ifdef DEBUG
+		#if DEBUG
 		StrIToA(playlistCountString, availablePlaylistIndex);
 		SendString("JUNK\tAVP count: ", false);
 		SendString(playlistCountString, false);
 		SendString("\r\n", false);
 		#endif
 
-		/*for (i=0 ; i<availablePlaylistIndex ; i++)
-		{
-			SendString("JUNK\tAVPS: '", false);
-			SendString(availablePlaylists[i], false);
-			SendString("'\r\n", false);
-		}*/
-
-		/*if (availablePlaylists == NULL)
-		{
-			return;
-		}*/
-
-		/*frm = FrmGetFormPtr(MainForm);
-		//listPtr = FrmGetObjectPtr(frm, PlaylistList);
-		listPtr = FrmGetObjectPtr(frm, FrmGetObjectIndex(frm, PlaylistList));
-		if (listPtr != NULL)
-		{
-			LstSetListChoices(listPtr, availablePlaylists,
-				availablePlaylistIndex);
-			LstSetHeight(listPtr, availablePlaylistIndex);
-			//LstDrawList(listPtr);
-		}*/
 		UpdatePlaylistDisplay();
-
 		availablePlaylistsLoaded = true;
 	}
 	else if (StrCompare(responseParts[0], "ERROR") == 0)
@@ -863,16 +811,6 @@ void CreateAvailablePlaylistArray(UInt16 numberOfPlaylists)
 		FrmAlert(MemoryAllocationFailedAlert);
 		return;
 	}
-
-	/*MemHandle memHandle = MemHandleNew(sizeof(Char *) * numberOfPlaylists);
-	if (memHandle == 0)
-	{
-		// alert user
-		FrmAlert(MemoryAllocationFailedAlert);
-		availablePlaylists = NULL;
-	}
-	memPtr = MemHandleLock(memHandle);
-	availablePlaylists = memPtr;*/
 }
 
 MemPtr AllocateAndLockMemory(UInt16 amountOfMemoryToAllocate)
@@ -925,7 +863,7 @@ void CleanupAvailablePlaylists(void)
 	MemHandle memHandle;
 	UInt16 i;
 
-	// Free old list
+	/* Free the memory for each playlist entry */
 	for(i=0 ; i<availablePlaylistIndex ; i++)
 	{
 		if (availablePlaylists != NULL && availablePlaylists[i] != NULL)
@@ -938,6 +876,7 @@ void CleanupAvailablePlaylists(void)
 			}
 		}
 	}
+	/* Free the memory for the array */
 	if (availablePlaylists != NULL)
 	{
 		memHandle = MemPtrRecoverHandle(availablePlaylists);
@@ -972,10 +911,11 @@ void UpdatePlaylistDisplay(void)
 		"Select Playlist");
 }
 
-// Ensure 'string' in no longer than 'size' by inserting a null character
-// at position 'size - 1' in the Char array.  Note that 'string' may have
-// a null character earlier in the array, this function does not affect
-// that.
+/* Ensure 'string' in no longer than 'size' by inserting a null character
+ * at position 'size - 1' in the Char array.  Note that 'string' may have
+ * a null character earlier in the array, this function does not affect
+ * that.
+ */
 void StringChop(Char *string, UInt16 size)
 {
 	Char *c;
