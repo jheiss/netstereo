@@ -11,3 +11,10 @@ Set selected playlist entry at startup?  (Seems to not currently happen)
 NetClient should reconnect if connection is lost
 Re-authenticate if authentication fails
 
+Client for Palm KVM:
+  Beginnings for network code are in MicroNetClient.java
+  Need to write GUI code as well, probably using kAWT (http://www.kawt.de/)
+
+CLI client:
+  No work done yet.
+
