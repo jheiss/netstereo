@@ -7,16 +7,20 @@ Configuration is done through one file:  server.properties.  An
 example is included with fairly verbose comments to guide you in
 configuring things for your setup.
 
-Because of what I consider a bug in the JDK, you must execute the
-server in the directory you want to be the working directory (the
-directory with your MP3 files).  See the included init script for
-an example.  Right now the configuration file (server.properties)
-must also reside in that directory.
+Because of a bug/lack of feature in the JDK
+(http://developer.java.sun.com/developer/bugParade/bugs/4045688.html and
+http://developer.java.sun.com/developer/bugParade/bugs/4117557.html),
+you must execute the server in the directory you want to be the
+working directory (the directory with your MP3 files).  See the
+included init script for an example.  Right now the configuration file
+(server.properties) must also reside in that directory.  If you
+are in UNIX, that could be a symbolic link to someplace more
+convenient.
 
 This was developed using the Sun JDK 1.3 for Linux.  The
 Java Media Framework (http://java.sun.com/products/java-media/jmf/) and
 Java Communications (http://java.sun.com/products/javacomm/) addons,
-a well as the MP3 class from http://www.vdheide.de/software/java_mp3.html,
+a well as the MP3 class from http://www.rabbitfarm.com/site/id3.html,
 will be needed to compile everything, but you should be able to
 run the server without them if you've configured it not to use them.
 (Compiling isn't necessary unless you change something, since I've
