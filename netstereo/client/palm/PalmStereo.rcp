@@ -4,6 +4,9 @@
  * Resource file for NetStereo Palm client.
  *****************************************************************************
  * $Log$
+ * Revision 1.1  2001/03/16 21:52:13  jheiss
+ * Initial revision
+ *
  * Revision 1.1  2001/03/07 01:40:06  jheiss
  * Initial revision
  *
@@ -89,7 +92,7 @@ INFORMATION
 BEGIN
 	TITLE "About PalmStereo"
 	MESSAGE "PalmOS remote control for NetStereo server\n" \
-		"$Id$\n" \
+		"Version 0.1\n" \
 		"http://ofb.net/~jheiss/netstereo/\n\n" \
 
 		"© 1998-2001  Jason Heiss (jheiss@ofb.net)\n" \
