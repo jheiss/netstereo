@@ -1,0 +1,26 @@
+$Id$
+
+Select correct playlist in list if playlists are loaded
+Replace current 10 second hack for detecting device power off with
+  a request to receive sysNotifyLateWakeupEvent notifications
+Attempt to re-authenticate if server rejects a command for auth problems
+  (useful if server has restarted)
+Remove wait option on SendString, nothing uses it
+Error log
+  Error messages from the server are currently ignored.  We don't want
+  to clutter the display with them, but it would be nice if the last
+  few messages were available for the user to look at.  Perhaps a button
+  or something that indicates how many have been received that the user
+  can click on to bring up a log.
+Preferences database and form
+  Currently everything is hardcoded.  The following stuff should be
+  configurable by the user:
+  - Baud rate
+  - Hardware flow control?
+  - Trim playlist path
+  - Favorite playlist
+Replace labels with fields
+  The O'Reilly book says it is better to use fields than labels for
+  things where you are changing the text.  Something to look into
+  for the artist, album, song, songinfo and time labels.
+
