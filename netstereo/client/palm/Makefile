@@ -4,6 +4,9 @@
 # Makefile for NetStereo Palm client
 ##############################################################################
 # $Log$
+# Revision 1.4  2001/05/10 03:58:42  jheiss
+# Added version variable.
+#
 # Revision 1.3  2001/04/17 21:18:42  jheiss
 # Added README to dist target.
 #
@@ -16,7 +19,7 @@
 ##############################################################################
 
 PROGRAM=PalmStereo
-VER=0.1
+VER=0.2
 CC=m68k-palmos-gcc
 PILRC=pilrc
 OBJRES=m68k-palmos-obj-res
