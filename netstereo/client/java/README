@@ -4,6 +4,10 @@ Java clients for the NetStereo application (currently only a GUI client
 using the Swing toolkit is implemented).  The server and other types
 of clients can be found at http://ofb.net/~jheiss/netstereo/
 
+Configuration (server, port, etc.) is hardcoded in StereoClient.java.
+You'll have to edit that and recompile for now.  The Swing client is
+SwingClient.class, so 'java SwingClient' should get things fired up.
+
 This was developed using the v1.3 JDK from Sun on Red Hat Linux 7.0
 and Windows 2000.  It should compile using any JDK which supports Swing.
 
