@@ -20,6 +20,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *****************************************************************************
  * $Log$
+ * Revision 1.2  2001/03/20 06:42:59  jheiss
+ * Added copyright and GPL message.
+ *
  * Revision 1.1  2001/03/20 06:35:25  jheiss
  * Initial revision
  *
@@ -401,7 +404,8 @@ abstract class SongPlayer
 		for (int i=0 ; i<playlistFiles.length ; i++)
 		{
 			//playlistFilenames[i] = playlistFiles[i].getAbsolutePath();
-			playlistFilenames[i] = playlistFiles[i].getPath();
+			//playlistFilenames[i] = playlistFiles[i].getPath();
+			playlistFilenames[i] = playlistFiles[i].getName();
 		}
 		//Sort.bubbleSort(playlistFilenames);
 		Sort.quickSort(playlistFilenames);
@@ -428,7 +432,8 @@ abstract class SongPlayer
 		for (int i=0 ; i<songFiles.length ; i++)
 		{
 			//songFilenames[i] = songFiles[i].getAbsolutePath();
-			songFilenames[i] = songFiles[i].getPath();
+			//songFilenames[i] = songFiles[i].getPath();
+			songFilenames[i] = songFiles[i].getName();
 		}
 		//Sort.bubbleSort(songFilenames);
 		Sort.quickSort(songFilenames);
