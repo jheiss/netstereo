@@ -1,0 +1,58 @@
+#!/bin/sh
+##############################################################################
+# $Id$
+##############################################################################
+# Init script for NetStereo server
+#
+# chkconfig: 2345 90 10
+# description: Server for NetStereo application
+##############################################################################
+# $Log$
+##############################################################################
+
+SU=true
+USER=jheiss
+APPDIR=/home/jheiss/netstereo/server/java
+MUSICDIR=/music
+LOGDIR=$APPDIR
+LOGFILE=$LOGDIR/stereoserver.log
+PIDFILE=$LOGDIR/stereoserver.pid
+JAVA=/usr/java/jdk1.3/bin/java
+SETVOLUME="aumix -v 75"
+KILLMPG123=true
+
+case "$1" in
+	start)
+		if [ -n "$SETVOLUME" ]
+		then
+			$SETVOLUME
+		fi
+		cd $MUSICDIR
+		if [ x"$SU" = "xtrue" ]
+		then
+			su $USER -c "$JAVA -classpath $APPDIR StereoServer" > $LOGFILE 2>&1 &
+		else
+			$JAVA -classpath $APPDIR StereoServer > $LOGFILE 2>&1 &
+		fi
+		pid=$!
+		echo "$pid" > $PIDFILE
+		;;
+	stop)
+		kill `cat $PIDFILE`
+		if [ x"$KILLMPG123" = "xtrue" ]
+		then
+			mpg123pid=`ps -e | grep mpg123 | head -1 | awk '{print $1}'`
+			if [ -n "$mpg123pid" ]
+			then
+				kill $mpg123pid
+			fi
+		fi
+		;;
+	restart)
+		$0 stop
+		$0 start
+		;;
+	*)
+		echo "Usage: stereoserver {start|stop|restart}"
+esac
+
