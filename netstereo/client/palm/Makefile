@@ -4,6 +4,9 @@
 # Makefile for NetStereo Palm client
 ##############################################################################
 # $Log$
+# Revision 1.1  2001/03/16 21:52:54  jheiss
+# Initial revision
+#
 ##############################################################################
 
 PROGRAM=PalmStereo
@@ -47,6 +50,14 @@ clean:
 
 xfer: $(PRC)
 	pilot-xfer -i $(PRC)
+
+dist: $(PRC)
+	rm -rf $(PROGRAM)-$(VER)
+	mkdir $(PROGRAM)-$(VER)
+	cp $(PRC) Makefile GPL TODO $(SOURCES) $(HEADERS) $(RESOURCES) $(ICON) $(PROGRAM)-$(VER)
+	tar cf $(PROGRAM)-$(VER).tar $(PROGRAM)-$(VER)
+	gzip $(PROGRAM)-$(VER).tar
+	rm -rf $(PROGRAM)-$(VER)
 
 ####
 # Dependency targets
